@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Status Checker Report</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        .working-row { background-color: #ecfdf5; border-left: 4px solid #10b981; }
+        .broken-row { background-color: #fef2f2; border-left: 4px solid #ef4444; }
+        .warning-row { background-color: #fffbeb; border-left: 4px solid #f59e0b; }
+        .summary-card { transition: transform 0.1s; cursor: pointer; }
+        .summary-card:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-6 sm:p-10">
+        <header class="mb-8 border-b pb-4">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Website Health Check</h1>
+            <p class="text-gray-500">Report Generated: 2025-10-22 11:54:17 | Source Sheet ID: <code class="bg-gray-100 p-1 rounded text-sm text-indigo-600">1xAAKZIMmNQZR7o4Twb_WengPe6IeoUH-zq6L6gKkHps</code></p>
+        </header>
+
+        <!-- Summary Cards (Interactive buttons) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+            <div onclick="filterTable('all')" class="summary-card bg-indigo-50 p-4 rounded-lg shadow-md border-b-4 border-indigo-500">
+                <p class="text-sm font-medium text-indigo-600">Total Sites</p>
+                <p class="text-3xl font-bold text-indigo-900">39</p>
+            </div>
+            <div onclick="filterTable('working')" class="summary-card bg-green-50 p-4 rounded-lg shadow-md border-b-4 border-green-500">
+                <p class="text-sm font-medium text-green-600">Working (2xx)</p>
+                <p class="text-3xl font-bold text-green-900">35</p>
+            </div>
+            <div onclick="filterTable('warning')" class="summary-card bg-yellow-50 p-4 rounded-lg shadow-md border-b-4 border-yellow-500">
+                <p class="text-sm font-medium text-yellow-600">Errors/Redirects/Content</p>
+                <p class="text-3xl font-bold text-yellow-900">4</p>
+            </div>
+            <div onclick="filterTable('broken')" class="summary-card bg-red-50 p-4 rounded-lg shadow-md border-b-4 border-red-500">
+                <p class="text-sm font-medium text-red-600">Broken (4xx/5xx)</p>
+                <p class="text-3xl font-bold text-red-900">0</p>
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">Detailed Status Log</h2>
+        <div class="overflow-x-auto rounded-lg shadow-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status & Details</th>
+                    </tr>
+                </thead>
+                <tbody id="detailed-table-body" class="bg-white divide-y divide-gray-200">
+
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="http://clarionofp.com/" target="_blank" rel="noopener noreferrer">http://clarionofp.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.harithahospital.com/" target="_blank" rel="noopener noreferrer">https://www.harithahospital.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">3</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.keyblocksstrategy.com/" target="_blank" rel="noopener noreferrer">https://www.keyblocksstrategy.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">4</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://kairosinternationalschool.com/" target="_blank" rel="noopener noreferrer">https://kairosinternationalschool.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">5</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://kairosgs.com/" target="_blank" rel="noopener noreferrer">https://kairosgs.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">6</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://manhattandress.com/" target="_blank" rel="noopener noreferrer">https://manhattandress.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">7</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.tricolour.co.in/" target="_blank" rel="noopener noreferrer">https://www.tricolour.co.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">8</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.vedahomeopathy.in/" target="_blank" rel="noopener noreferrer">https://www.vedahomeopathy.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">9</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.vedahomeopathy.in/" target="_blank" rel="noopener noreferrer">https://www.vedahomeopathy.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">10</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://wavefiber.co.in/" target="_blank" rel="noopener noreferrer">https://wavefiber.co.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">11</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.tiyatel.com/" target="_blank" rel="noopener noreferrer">https://www.tiyatel.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">12</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://indiajewelleryfair.net/" target="_blank" rel="noopener noreferrer">https://indiajewelleryfair.net/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">13</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://snorequit.in/" target="_blank" rel="noopener noreferrer">https://snorequit.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">14</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://viswasai.com/" target="_blank" rel="noopener noreferrer">https://viswasai.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">15</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.avinternationalschool.in/" target="_blank" rel="noopener noreferrer">https://www.avinternationalschool.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="warning" class="warning-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">16</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://pioneerhospitals.in/" target="_blank" rel="noopener noreferrer">https://pioneerhospitals.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">⚠️ Timeout</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">17</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://rxpert.in/" target="_blank" rel="noopener noreferrer">https://rxpert.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">18</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://sukrithideveloper.in/" target="_blank" rel="noopener noreferrer">https://sukrithideveloper.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">19</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://securezone.in/" target="_blank" rel="noopener noreferrer">https://securezone.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">20</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://sukrithideveloper.in/" target="_blank" rel="noopener noreferrer">https://sukrithideveloper.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">21</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://medicononline.in/" target="_blank" rel="noopener noreferrer">https://medicononline.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">22</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.mlsandassociates.com/" target="_blank" rel="noopener noreferrer">https://www.mlsandassociates.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">23</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://elitexindia.in/" target="_blank" rel="noopener noreferrer">https://elitexindia.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">24</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.nivanophysicians.com/" target="_blank" rel="noopener noreferrer">https://www.nivanophysicians.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">25</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://rgrsiddhanthimbacollege.com/" target="_blank" rel="noopener noreferrer">https://rgrsiddhanthimbacollege.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">26</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://thomesinfra.com/" target="_blank" rel="noopener noreferrer">https://thomesinfra.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">27</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.rgrsiddhanthibedcollege.com/" target="_blank" rel="noopener noreferrer">https://www.rgrsiddhanthibedcollege.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">28</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://bhimasdeluxehotel.com/" target="_blank" rel="noopener noreferrer">https://bhimasdeluxehotel.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">29</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.quickmarriages.com/" target="_blank" rel="noopener noreferrer">https://www.quickmarriages.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">30</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://trutastes.in/" target="_blank" rel="noopener noreferrer">https://trutastes.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">31</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://www.saaradhihotels.com/" target="_blank" rel="noopener noreferrer">https://www.saaradhihotels.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">32</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://cocoontheschool.com/" target="_blank" rel="noopener noreferrer">https://cocoontheschool.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">33</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://indiajewelleryfair.net/" target="_blank" rel="noopener noreferrer">https://indiajewelleryfair.net/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">34</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://modeldairy.in/" target="_blank" rel="noopener noreferrer">https://modeldairy.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">35</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://doggyvilleindia.in/" target="_blank" rel="noopener noreferrer">https://doggyvilleindia.in/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="working" class="working-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">36</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="https://jawedhabib.com/" target="_blank" rel="noopener noreferrer">https://jawedhabib.com/</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">✅ Working (Status: 200)</td>
+                    </tr>
+        
+                    <tr data-status="warning" class="warning-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">37</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="Under development" target="_blank" rel="noopener noreferrer">Under development</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">⚠️ Connection Error (Blocked or DNS Fail)</td>
+                    </tr>
+        
+                    <tr data-status="warning" class="warning-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">38</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="Under development - from client side" target="_blank" rel="noopener noreferrer">Under development - from client side</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">⚠️ Connection Error (Blocked or DNS Fail)</td>
+                    </tr>
+        
+                    <tr data-status="warning" class="warning-row hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">39</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="yrda.in" target="_blank" rel="noopener noreferrer">yrda.in</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">⚠️ Connection Error (Blocked or DNS Fail)</td>
+                    </tr>
+        
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- JavaScript for filtering -->
+    <script>
+        
+    function filterTable(statusType) {
+        const rows = document.querySelectorAll('#detailed-table-body tr');
+        
+        rows.forEach(row => {
+            const rowStatus = row.getAttribute('data-status');
+            
+            if (statusType === 'all') {
+                row.style.display = '';
+            } else if (rowStatus === statusType) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    </script>
+</body>
+</html>

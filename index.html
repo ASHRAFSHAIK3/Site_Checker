@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Health Dashboard</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        .working-row { background-color: #ecfdf5; border-left: 4px solid #10b981; }
+        .broken-row { background-color: #fef2f2; border-left: 4px solid #ef4444; }
+        .warning-row { background-color: #fffbeb; border-left: 4px solid #f59e0b; }
+        .summary-card { transition: transform 0.1s; cursor: pointer; }
+        .summary-card:hover { transform: scale(1.02); }
+        .loading-ring { width: 1.5rem; height: 1.5rem; border: 3px solid rgba(255, 255, 255, 0.5); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-6 sm:p-10">
+        <header class="mb-8 border-b pb-4">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Web Health Dashboard</h1>
+            <p class="text-gray-500">Scan your Google Sheet URLs directly in the browser.</p>
+        </header>
+
+        <!-- Configuration Panel -->
+        <div id="config-panel" class="mb-8 p-4 border rounded-lg bg-gray-50">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Configuration (Enter Details Below)</h2>
+            <p class="text-sm text-red-600 mb-4 font-semibold">
+                ⚠️ This app requires your Google Sheet to be shared as 'Anyone with the link' (Viewer access) and requires a Google Cloud API Key.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <input type="text" id="api-key" placeholder="Google Cloud API Key (Required)" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" value="">
+                <input type="text" id="spreadsheet-id" placeholder="Spreadsheet ID (from URL)" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" value="1xAAKZIMmNQZR7o4Twb_WengPe6IeoUH-zq6L6gKkHps">
+                <input type="text" id="url-range" placeholder="Sheet Name!URL Column (e.g., Sheet1!C2:C)" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" value="Sheet1!C2:C">
+            </div>
+
+            <!-- The Scan Button -->
+            <button onclick="startScan()" id="scan-button" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition duration-150 flex items-center justify-center">
+                <span id="button-text">Start Website Scan</span>
+                <span id="loading-spinner" class="loading-ring ml-3 hidden"></span>
+            </button>
+        </div>
+        
+        <!-- Status and Summary -->
+        <div id="status-message" class="mb-6 font-medium text-center text-lg text-gray-700">Ready to scan.</div>
+
+        <div id="summary-section" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+                <div onclick="filterTable('all')" class="summary-card bg-indigo-50 p-4 rounded-lg shadow-md border-b-4 border-indigo-500">
+                    <p class="text-sm font-medium text-indigo-600">Total Sites</p>
+                    <p id="total-sites" class="text-3xl font-bold text-indigo-900">0</p>
+                </div>
+                <div onclick="filterTable('working')" class="summary-card bg-green-50 p-4 rounded-lg shadow-md border-b-4 border-green-500">
+                    <p class="text-sm font-medium text-green-600">Working (2xx)</p>
+                    <p id="working-sites" class="text-3xl font-bold text-green-900">0</p>
+                </div>
+                <div onclick="filterTable('warning')" class="summary-card bg-yellow-50 p-4 rounded-lg shadow-md border-b-4 border-yellow-500">
+                    <p class="text-sm font-medium text-yellow-600">Errors/Redirects/Content</p>
+                    <p id="warning-sites" class="text-3xl font-bold text-yellow-900">0</p>
+                </div>
+                <div onclick="filterTable('broken')" class="summary-card bg-red-50 p-4 rounded-lg shadow-md border-b-4 border-red-500">
+                    <p class="text-sm font-medium text-red-600">Broken (4xx/5xx)</p>
+                    <p id="broken-sites" class="text-3xl font-bold text-red-900">0</p>
+                </div>
+            </div>
+
+            <!-- Detailed Table -->
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">Detailed Status Log</h2>
+            <div class="overflow-x-auto rounded-lg shadow-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status & Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailed-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Results will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FORBIDDEN_KEYWORDS = [
+            "account suspended", 
+            "domain parking", 
+            "suspended page", 
+            "default web page",
+            "web host default page"
+        ];
+        
+        const STATUS_CODES = {
+            WORKING: 'working',
+            BROKEN: 'broken',
+            WARNING: 'warning',
+            ALL: 'all'
+        };
+
+        // --- Core Logic Functions ---
+
+        function setButtonState(enabled, text) {
+            const button = document.getElementById('scan-button');
+            const buttonText = document.getElementById('button-text');
+            const spinner = document.getElementById('loading-spinner');
+            
+            button.disabled = !enabled;
+            button.classList.toggle('bg-gray-400', !enabled);
+            button.classList.toggle('bg-indigo-600', enabled);
+            button.classList.toggle('hover:bg-indigo-700', enabled);
+            buttonText.textContent = text;
+            spinner.classList.toggle('hidden', enabled);
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status-message').textContent = message;
+        }
+
+        async function readSheetData(apiKey, spreadsheetId, range) {
+            updateStatus('Fetching URLs from Google Sheet...');
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error.message || 'Error fetching data from Sheets API. Check your API Key and Sheet sharing settings.');
+                }
+
+                if (!data.values || data.values.length === 0) {
+                    return [];
+                }
+
+                return data.values.map(row => String(row[0]).trim()).filter(url => url.length > 0);
+
+            } catch (error) {
+                console.error("Sheets API Error:", error);
+                updateStatus(`ERROR: Sheets API failed. Check API Key, Sheet ID, Range, and ensure the sheet is publicly shared. Details: ${error.message}`);
+                return null;
+            }
+        }
+
+        async function checkWebsiteStatus(url) {
+            let finalUrl = url.trim();
+            if (!finalUrl.startsWith('http')) {
+                finalUrl = 'https://' + finalUrl;
+            }
+            
+            // --- FIX: Attempt a direct HEAD request. This is highly susceptible to CORS, 
+            // but if the server allows it, it's the fastest and most accurate check.
+            try {
+                // Use HEAD method to only get headers, avoiding full content download
+                const response = await fetch(finalUrl, {
+                    method: 'HEAD',
+                    mode: 'cors', // Use CORS mode
+                    signal: AbortSignal.timeout(10000), // 10 second timeout
+                    // Note: We cannot send custom headers due to simple CORS rules
+                });
+
+                const status = response.status;
+                
+                // 1. Check HTTP Status Code
+                if (status >= 200 && status < 300) {
+                    // We cannot check for content (like 'suspended') with a HEAD request, 
+                    // but we can assume it's working based on status code.
+                    return { status: `✅ Working (Status: ${status})`, type: STATUS_CODES.WORKING };
+                } else if (status >= 300 && status < 400) {
+                    return { status: `🟡 Redirect (Status: ${status})`, type: STATUS_CODES.WARNING };
+                } else {
+                    return { status: `❌ Broken (Status: ${status})`, type: STATUS_CODES.BROKEN };
+                }
+
+            } catch (error) {
+                // This catch block handles all network failures (CORS policy, Timeout, DNS failure, etc.)
+                
+                // If the error is due to CORS policy (which is likely for most external sites), 
+                // we report the reason why the browser failed the check.
+                if (error instanceof TypeError || (error.message && error.message.includes('network error'))) {
+                    return { status: `⚠️ Browser Block (CORS Policy Error)`, type: STATUS_CODES.WARNING };
+                }
+                if (error.name === 'TimeoutError') {
+                    return { status: `⚠️ Timeout (10 seconds exceeded)`, type: STATUS_CODES.WARNING };
+                }
+                
+                return { status: `⚠️ Connection Error (Network or DNS issue)`, type: STATUS_CODES.WARNING };
+            }
+        }
+        
+        function updateSummary(results) {
+            let working = 0, broken = 0, warning = 0;
+
+            results.forEach(item => {
+                if (item.type === STATUS_CODES.WORKING) working++;
+                else if (item.type === STATUS_CODES.BROKEN) broken++;
+                else if (item.type === STATUS_CODES.WARNING) warning++;
+            });
+
+            document.getElementById('total-sites').textContent = results.length;
+            document.getElementById('working-sites').textContent = working;
+            document.getElementById('broken-sites').textContent = broken;
+            document.getElementById('warning-sites').textContent = warning;
+            document.getElementById('summary-section').classList.remove('hidden');
+        }
+
+        function renderTable(results) {
+            const tbody = document.getElementById('detailed-table-body');
+            tbody.innerHTML = '';
+            
+            results.forEach((item, index) => {
+                const row = document.createElement('tr');
+                let rowClass = item.type === STATUS_CODES.WORKING ? 'working-row' : 
+                               item.type === STATUS_CODES.BROKEN ? 'broken-row' : 'warning-row';
+                
+                row.setAttribute('data-status', item.type);
+                row.className = `${rowClass} hover:bg-gray-50 transition duration-150 ease-in-out`;
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${index + 1}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.url}</a></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item.status}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterTable(statusType) {
+            const rows = document.querySelectorAll('#detailed-table-body tr');
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                
+                if (statusType === STATUS_CODES.ALL || rowStatus === statusType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // --- Main Execution ---
+        async function startScan() {
+            setButtonState(false, 'Starting Scan...');
+            document.getElementById('summary-section').classList.add('hidden');
+            document.getElementById('detailed-table-body').innerHTML = '';
+
+            const apiKey = document.getElementById('api-key').value.trim();
+            const spreadsheetId = document.getElementById('spreadsheet-id').value.trim();
+            const urlRange = document.getElementById('url-range').value.trim();
+
+            if (!apiKey || !spreadsheetId || !urlRange) {
+                updateStatus('ERROR: Please fill in all configuration fields.');
+                setButtonState(true, 'Start Website Scan');
+                return;
+            }
+
+            const urls = await readSheetData(apiKey, spreadsheetId, urlRange);
+            
+            if (!urls) {
+                setButtonState(true, 'Start Website Scan');
+                return;
+            }
+            
+            const total = urls.length;
+            const results = [];
+
+            updateStatus(`Found ${total} URLs. Starting website availability checks...`);
+
+            for (let i = 0; i < total; i++) {
+                const url = urls[i];
+                updateStatus(`Checking ${i + 1} of ${total}: ${url}`);
+                const result = await checkWebsiteStatus(url);
+                result.url = url;
+                results.push(result);
+                // Simple visual delay to prevent the UI from locking up on fast checks
+                await new Promise(r => setTimeout(r, 50)); 
+            }
+
+            updateStatus('Scan Complete! Generating Report...');
+            
+            updateSummary(results);
+            renderTable(results);
+            filterTable(STATUS_CODES.ALL); // Show all results by default
+            setButtonState(true, 'Scan Complete. Rerun Scan');
+        }
+
+    </script>
+</body>
+</html>
